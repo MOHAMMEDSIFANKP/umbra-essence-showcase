@@ -2,38 +2,64 @@ import { useState } from 'react';
 import { Mail, Phone, MapPin, Send, Github, Linkedin, Twitter } from 'lucide-react';
 import { Button } from '@/components/ui/button';
 import { toast } from 'sonner';
+import { useNavigate } from 'react-router-dom';
 
 const ContactSection = () => {
-  const [formData, setFormData] = useState({
-    name: '',
-    email: '',
-    subject: '',
-    message: ''
-  });
+ const [isMenuOpen, setIsMenuOpen] = useState(false);
+ const [formData, setFormData] = useState({
+   name: "",
+   email: "",
+   phone: "",
+   enquiry: "",
+ });
 
-  const handleSubmit = (e: React.FormEvent) => {
-    e.preventDefault();
-    
-    // Simulate form submission
-    toast("Message sent successfully! I'll get back to you soon.", {
-      duration: 4000,
-    });
-    
-    // Reset form
-    setFormData({
-      name: '',
-      email: '',
-      subject: '',
-      message: ''
-    });
-  };
+ const [loading, setLoading] = useState(false);
+ const navigate = useNavigate();
+ const sheeturl = import.meta.env.VITE_SHEET_URL;
 
-  const handleChange = (e: React.ChangeEvent<HTMLInputElement | HTMLTextAreaElement>) => {
-    setFormData(prev => ({
-      ...prev,
-      [e.target.name]: e.target.value
-    }));
-  };
+ const handleChange = (e) => {
+   setFormData({
+     ...formData,
+     [e.target.name]: e.target.value,
+   });
+ };
+
+ const handleSubmit = async (e) => {
+   e.preventDefault();
+   setLoading(true);
+
+   try {
+     console.log("Submitting to:", sheeturl);
+     console.log("Form Data:", JSON.stringify(formData));
+
+     await fetch(sheeturl, {
+       method: "POST",
+       headers: { "Content-Type": "application/json" },
+       mode: "no-cors",
+       body: JSON.stringify(formData),
+     });
+     console.log(formData);
+
+     // Ensure success response from API
+
+     toast.success("Message sent successfully! 🎉");
+     setFormData({
+       name: "",
+       email: "",
+       phone: "",
+       enquiry: "",
+     });
+
+     setTimeout(() => {
+       navigate("/");
+     }, 2000);
+   } catch (error) {
+     console.error("Error submitting form:", error);
+     toast.error("Failed to send location. Please try again.");
+   } finally {
+     setLoading(false);
+   }
+ };
 
   const socialLinks = [
     {
@@ -60,19 +86,19 @@ const ContactSection = () => {
     {
       icon: Mail,
       label: "Email",
-      value: "hello@alexmorgan.dev",
-      href: "mailto:hello@alexmorgan.dev"
+      value: "devxtechnology.in@gmail.com",
+      href: "mailto:devxtechnology.in@gmail.com"
     },
     {
       icon: Phone,
       label: "Phone",
-      value: "+1 (555) 123-4567",
-      href: "tel:+15551234567"
+      value: "+91 9946840416",
+      href: "tel:+919946840416"
     },
     {
       icon: MapPin,
       label: "Location",
-      value: "San Francisco, CA",
+      value: "India",
       href: "#"
     }
   ];
@@ -86,8 +112,8 @@ const ContactSection = () => {
               Let's Work Together
             </h2>
             <p className="font-body text-xl text-muted-foreground max-w-3xl mx-auto">
-              Ready to bring your project to life? I'd love to hear about your ideas 
-              and discuss how we can create something amazing together.
+              Ready to bring your project to life? I'd love to hear about your
+              ideas and discuss how we can create something amazing together.
             </p>
           </div>
 
@@ -99,14 +125,18 @@ const ContactSection = () => {
                   Send a Message
                 </h3>
                 <p className="font-body text-muted-foreground">
-                  Fill out the form below and I'll get back to you within 24 hours.
+                  Fill out the form below and I'll get back to you within 24
+                  hours.
                 </p>
               </div>
 
               <form onSubmit={handleSubmit} className="space-y-6">
                 <div className="grid md:grid-cols-2 gap-6">
                   <div>
-                    <label htmlFor="name" className="block font-body text-sm font-medium text-foreground mb-2">
+                    <label
+                      htmlFor="name"
+                      className="block font-body text-sm font-medium text-foreground mb-2"
+                    >
                       Name *
                     </label>
                     <input
@@ -121,7 +151,10 @@ const ContactSection = () => {
                     />
                   </div>
                   <div>
-                    <label htmlFor="email" className="block font-body text-sm font-medium text-foreground mb-2">
+                    <label
+                      htmlFor="email"
+                      className="block font-body text-sm font-medium text-foreground mb-2"
+                    >
                       Email *
                     </label>
                     <input
@@ -138,41 +171,47 @@ const ContactSection = () => {
                 </div>
 
                 <div>
-                  <label htmlFor="subject" className="block font-body text-sm font-medium text-foreground mb-2">
-                    Subject *
+                  <label
+                    htmlFor="phone"
+                    className="block font-body text-sm font-medium text-foreground mb-2"
+                  >
+                    phone * (Please include country code)
                   </label>
                   <input
                     type="text"
-                    id="subject"
-                    name="subject"
+                    id="phone"
+                    name="phone"
                     required
-                    value={formData.subject}
+                    value={formData.phone}
                     onChange={handleChange}
                     className="w-full px-4 py-3 bg-surface-elevated border border-border rounded-xl focus:outline-none focus:ring-2 focus:ring-primary focus:border-transparent transition-all duration-300 text-foreground"
-                    placeholder="Project discussion"
+                    placeholder="Phone number Including country code"
                   />
                 </div>
 
                 <div>
-                  <label htmlFor="message" className="block font-body text-sm font-medium text-foreground mb-2">
-                    Message *
+                  <label
+                    htmlFor="enquiry"
+                    className="block font-body text-sm font-medium text-foreground mb-2"
+                  >
+                    Enquiry *
                   </label>
                   <textarea
-                    id="message"
-                    name="message"
+                    id="enquiry"
+                    name="enquiry"
                     required
                     rows={6}
-                    value={formData.message}
+                    value={formData.enquiry}
                     onChange={handleChange}
                     className="w-full px-4 py-3 bg-surface-elevated border border-border rounded-xl focus:outline-none focus:ring-2 focus:ring-primary focus:border-transparent transition-all duration-300 text-foreground resize-none"
                     placeholder="Tell me about your project..."
                   />
                 </div>
 
-                <Button 
-                  type="submit" 
-                  variant="3d" 
-                  size="xl" 
+                <Button
+                  type="submit"
+                  variant="3d"
+                  size="xl"
                   className="w-full group"
                 >
                   <Send className="w-5 h-5 mr-2 transition-transform group-hover:translate-x-1" />
@@ -188,7 +227,8 @@ const ContactSection = () => {
                   Get In Touch
                 </h3>
                 <p className="font-body text-muted-foreground">
-                  Prefer to reach out directly? You can find me through any of these channels.
+                  Prefer to reach out directly? You can find me through any of
+                  these channels.
                 </p>
               </div>
 
@@ -245,8 +285,8 @@ const ContactSection = () => {
                   Response Time
                 </h4>
                 <p className="font-body text-muted-foreground text-sm">
-                  I typically respond to all inquiries within 24 hours. 
-                  For urgent projects, feel free to call directly.
+                  I typically respond to all inquiries within 24 hours. For
+                  urgent projects, feel free to call directly.
                 </p>
               </div>
             </div>
