@@ -87,20 +87,26 @@ const ContactSection = () => {
       icon: Mail,
       label: "Email",
       value: "devxtechnology.in@gmail.com",
-      href: "mailto:devxtechnology.in@gmail.com"
+      href: "mailto:devxtechnology.in@gmail.com",
     },
     {
       icon: Phone,
       label: "Phone",
       value: "+91 9946840416",
-      href: "tel:+919946840416"
+      href: "tel:+919946840416",
+    },
+    {
+      icon: Phone,
+      label: "Phone",
+      value: "+91 9562040856",
+      href: "tel:+919562040856",
     },
     {
       icon: MapPin,
       label: "Location",
       value: "India",
-      href: "#"
-    }
+      href: "#",
+    },
   ];
 
   return (
